@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import typer
 
 from blockpipe_engine import x
