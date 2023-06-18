@@ -101,3 +101,31 @@ def test_parse_bytes32():
     test('uint', 123131323131, ParamTypeUint(256))
     test('int', -123131323131, ParamTypeInt(256))
     test('bytes3', b'1' * 3, ParamTypeFixedBytes(3))
+
+
+def test_event_to_json():
+    event = parse_event(
+        'event MyTest(address[] indexed a, (uint, int32, bytes) b, string[32][] c, (uint)[] d)')
+    assert event.to_json() == {
+        'name': 'MyTest',
+        'inputs': [{
+            'name': 'a',
+            'indexed': True,
+            'type': 'address[]',
+        }, {
+            'name': 'b',
+            'indexed': False,
+            'components': [{'type': 'uint256'}, {'type': 'int32'}, {'type': 'bytes'}],
+            'type': 'tuple',
+        }, {
+            'name': 'c',
+            'indexed': False,
+            'type': 'string[32][]',
+        }, {
+            'name': 'd',
+            'indexed': False,
+            'components': [{'type': 'uint256'}],
+            'type': 'tuple[]',
+        }],
+        'anonymous': False,
+    }
