@@ -73,6 +73,7 @@ TOKEN_MAPPING = {**{
     'constant': TokenKeyword('constant'),
     'enum': TokenKeyword('enum'),
     'error': TokenKeyword('error'),
+    'event': TokenKeyword('event'),
     'external': TokenKeyword('external'),
     'fallback': TokenKeyword('fallback'),
     'function': TokenKeyword('function'),
