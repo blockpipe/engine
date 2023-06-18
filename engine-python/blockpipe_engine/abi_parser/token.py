@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
@@ -48,6 +49,19 @@ class TokenTyWithSize(TokenTy):
         return f'{super().to_string()}{self.size}'
 
 
+SYMBOL_MAPPING = {
+    '{': TokenSymbol('{'),
+    '}': TokenSymbol('}'),
+    '[': TokenSymbol('['),
+    ']': TokenSymbol(']'),
+    '(': TokenSymbol('('),
+    ')': TokenSymbol(')'),
+    ';': TokenSymbol(';'),
+    ',': TokenSymbol(','),
+    '.': TokenSymbol('.'),
+}
+
+
 TOKEN_MAPPING = {**{
     'abstract': TokenKeyword('abstract'),
     'address': TokenTy('address'),
@@ -93,5 +107,18 @@ TOKEN_MAPPING = {**{
 }}
 
 
+def parse_symbol(value):
+    if len(value) != 1:
+        raise ValueError(
+            f'Invalid symbol candidate: {value}; length must be 1')
+    return SYMBOL_MAPPING.get(value)
+
+
 def parse_token(value):
-    return TOKEN_MAPPING.get(value)
+    if (res := SYMBOL_MAPPING.get(value)) is not None:
+        return res
+    if (res := TOKEN_MAPPING.get(value)) is not None:
+        return res
+    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', value):
+        raise ValueError(f'Invalid identifier candidate: {value}')
+    return TokenIdentifier(value)
