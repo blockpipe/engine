@@ -34,6 +34,14 @@ class TokenIdentifier(Token):
 
 
 @dataclass
+class TokenNumber(Token):
+    number: int
+
+    def to_string(self):
+        return str(self.number)
+
+
+@dataclass
 class TokenTy(Token):
     ty: str
 
@@ -163,6 +171,8 @@ def parse_token(value):
         return res
     if (res := TOKEN_MAPPING.get(value)) is not None:
         return res
-    if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', value):
-        raise ValueError(f'Invalid identifier candidate: {value}')
-    return TokenIdentifier(value)
+    if re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', value):
+        return TokenIdentifier(value)
+    if re.match(r'^[0-9]+$', value):
+        return TokenNumber(int(value))
+    raise ValueError(f'Invalid token value: "{value}"')

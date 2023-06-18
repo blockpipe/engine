@@ -1,4 +1,4 @@
-from .parser import HumanReadableParser
+from .parser import parse_event
 
 
-__all__ = ['HumanReadableParser']
+__all__ = ['parse_event']
