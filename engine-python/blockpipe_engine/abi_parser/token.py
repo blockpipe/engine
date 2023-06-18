@@ -49,53 +49,96 @@ class TokenTyWithSize(TokenTy):
         return f'{super().to_string()}{self.size}'
 
 
-SYMBOL_MAPPING = {
-    '{': TokenSymbol('{'),
-    '}': TokenSymbol('}'),
-    '[': TokenSymbol('['),
-    ']': TokenSymbol(']'),
-    '(': TokenSymbol('('),
-    ')': TokenSymbol(')'),
-    ';': TokenSymbol(';'),
-    ',': TokenSymbol(','),
-    '.': TokenSymbol('.'),
-}
+SYMBOL_OPEN_BRACE = TokenSymbol('{')
+SYMBOL_CLOSE_BRACE = TokenSymbol('}')
+SYMBOL_OPEN_BRACKET = TokenSymbol('[')
+SYMBOL_CLOSE_BRACKET = TokenSymbol(']')
+SYMBOL_OPEN_PAREN = TokenSymbol('(')
+SYMBOL_CLOSE_PAREN = TokenSymbol(')')
+SYMBOL_COMMA = TokenSymbol(',')
+SYMBOL_DOT = TokenSymbol('.')
+SYMBOL_SEMICOLON = TokenSymbol(';')
+
+SYMBOL_MAPPING = {symbol.to_string(): symbol for symbol in (
+    SYMBOL_OPEN_BRACE,
+    SYMBOL_CLOSE_BRACE,
+    SYMBOL_OPEN_BRACKET,
+    SYMBOL_CLOSE_BRACKET,
+    SYMBOL_OPEN_PAREN,
+    SYMBOL_CLOSE_PAREN,
+    SYMBOL_SEMICOLON,
+    SYMBOL_COMMA,
+    SYMBOL_DOT,
+)}
 
 
-TOKEN_MAPPING = {**{
-    'abstract': TokenKeyword('abstract'),
-    'address': TokenTy('address'),
-    'anonymous': TokenKeyword('anonymous'),
-    'bool': TokenTy('bool'),
-    'bytes': TokenTy('bytes'),
-    'byte': TokenTy('byte'),
-    'calldata': TokenKeyword('calldata'),
-    'constant': TokenKeyword('constant'),
-    'enum': TokenKeyword('enum'),
-    'error': TokenKeyword('error'),
-    'event': TokenKeyword('event'),
-    'external': TokenKeyword('external'),
-    'fallback': TokenKeyword('fallback'),
-    'function': TokenKeyword('function'),
-    'indexed': TokenKeyword('indexed'),
-    'tuple': TokenKeyword('tuple'),
-    'internal': TokenKeyword('internal'),
+TOKEN_TY_ADDRESS = TokenTy('address')
+TOKEN_TY_BOOL = TokenTy('bool')
+TOKEN_TY_BYTES = TokenTy('bytes')
+TOKEN_TY_BYTE = TokenTy('byte')
+TOKEN_TY_STRING = TokenTy('string')
+TOKEN_KEYWORD_ABSTRACT = TokenKeyword('abstract')
+TOKEN_KEYWORD_ANONYMOUS = TokenKeyword('anonymous')
+TOKEN_KEYWORD_CALLDATA = TokenKeyword('calldata')
+TOKEN_KEYWORD_CONSTANT = TokenKeyword('constant')
+TOKEN_KEYWORD_ENUM = TokenKeyword('enum')
+TOKEN_KEYWORD_ERROR = TokenKeyword('error')
+TOKEN_KEYWORD_EVENT = TokenKeyword('event')
+TOKEN_KEYWORD_EXTERNAL = TokenKeyword('external')
+TOKEN_KEYWORD_FALLBACK = TokenKeyword('fallback')
+TOKEN_KEYWORD_FUNCTION = TokenKeyword('function')
+TOKEN_KEYWORD_INDEXED = TokenKeyword('indexed')
+TOKEN_KEYWORD_TUPLE = TokenKeyword('tuple')
+TOKEN_KEYWORD_INTERNAL = TokenKeyword('internal')
+TOKEN_KEYWORD_MEMORY = TokenKeyword('memory')
+TOKEN_KEYWORD_OVERRIDE = TokenKeyword('override')
+TOKEN_KEYWORD_PAYABLE = TokenKeyword('payable')
+TOKEN_KEYWORD_PRIVATE = TokenKeyword('private')
+TOKEN_KEYWORD_PUBLIC = TokenKeyword('public')
+TOKEN_KEYWORD_PURE = TokenKeyword('pure')
+TOKEN_KEYWORD_RECEIVE = TokenKeyword('receive')
+TOKEN_KEYWORD_RETURNS = TokenKeyword('returns')
+TOKEN_KEYWORD_STORAGE = TokenKeyword('storage')
+TOKEN_KEYWORD_STRUCT = TokenKeyword('struct')
+TOKEN_KEYWORD_TYPE = TokenKeyword('type')
+TOKEN_KEYWORD_VIEW = TokenKeyword('view')
+TOKEN_KEYWORD_VIRTUAL = TokenKeyword('virtual')
+
+TOKEN_MAPPING = {**{token.to_string(): token for token in [
+    TOKEN_TY_ADDRESS,
+    TOKEN_TY_BOOL,
+    TOKEN_TY_BYTES,
+    TOKEN_TY_BYTE,
+    TOKEN_TY_STRING,
+    TOKEN_KEYWORD_ABSTRACT,
+    TOKEN_KEYWORD_ANONYMOUS,
+    TOKEN_KEYWORD_CALLDATA,
+    TOKEN_KEYWORD_CONSTANT,
+    TOKEN_KEYWORD_ENUM,
+    TOKEN_KEYWORD_ERROR,
+    TOKEN_KEYWORD_EVENT,
+    TOKEN_KEYWORD_EXTERNAL,
+    TOKEN_KEYWORD_FALLBACK,
+    TOKEN_KEYWORD_FUNCTION,
+    TOKEN_KEYWORD_INDEXED,
+    TOKEN_KEYWORD_TUPLE,
+    TOKEN_KEYWORD_INTERNAL,
+    TOKEN_KEYWORD_MEMORY,
+    TOKEN_KEYWORD_OVERRIDE,
+    TOKEN_KEYWORD_PAYABLE,
+    TOKEN_KEYWORD_PRIVATE,
+    TOKEN_KEYWORD_PUBLIC,
+    TOKEN_KEYWORD_PURE,
+    TOKEN_KEYWORD_RECEIVE,
+    TOKEN_KEYWORD_RETURNS,
+    TOKEN_KEYWORD_STORAGE,
+    TOKEN_KEYWORD_STRUCT,
+    TOKEN_KEYWORD_TYPE,
+    TOKEN_KEYWORD_VIEW,
+    TOKEN_KEYWORD_VIRTUAL
+]}, **{
     'int': TokenTyWithSize('int', 256),
-    'memory': TokenKeyword('memory'),
-    'override': TokenKeyword('override'),
-    'payable': TokenKeyword('payable'),
-    'private': TokenKeyword('private'),
-    'public': TokenKeyword('public'),
-    'pure': TokenKeyword('pure'),
-    'receive': TokenKeyword('receive'),
-    'returns': TokenKeyword('returns'),
-    'storage': TokenKeyword('storage'),
-    'string': TokenTy('string'),
-    'struct': TokenKeyword('struct'),
-    'type': TokenKeyword('type'),
     'uint': TokenTyWithSize('uint', 256),
-    'view': TokenKeyword('view'),
-    'virtual': TokenKeyword('virtual'),
 }, **{
     # uint8, uint16, uint24, ..., uint256
     f'uint{sz}': TokenTyWithSize('uint', sz) for sz in range(8, 257, 8)
