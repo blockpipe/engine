@@ -1,4 +1,5 @@
 import pytest
+from eth_abi.abi import encode
 
 from blockpipe_engine.abi_parser import parse_event
 from blockpipe_engine.abi_parser.lexer import HumanReadableLexer
@@ -18,6 +19,7 @@ from blockpipe_engine.abi_parser.types import (
     ParamTypeAddress,
     ParamTypeArray,
     ParamTypeBytes,
+    ParamTypeFixedBytes,
     ParamTypeFixedArray,
     ParamTypeInt,
     ParamTypeString,
@@ -90,3 +92,12 @@ def test_parse_event():
             indexed=False)],
         anonymous=False,
     )
+
+
+def test_parse_bytes32():
+    def test(ty, value, parser):
+        assert parser.parse_bytes32(encode([ty], [value])) == value
+    test('address', b'\00' * 20, ParamTypeAddress())
+    test('uint', 123131323131, ParamTypeUint(256))
+    test('int', -123131323131, ParamTypeInt(256))
+    test('bytes3', b'1' * 3, ParamTypeFixedBytes(3))

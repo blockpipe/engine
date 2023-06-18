@@ -147,6 +147,7 @@ TOKEN_MAPPING = {**{token.to_string(): token for token in [
 ]}, **{
     'int': TokenTyWithSize('int', 256),
     'uint': TokenTyWithSize('uint', 256),
+    'byte': TokenTyWithSize('bytes', 1),
 }, **{
     # uint8, uint16, uint24, ..., uint256
     f'uint{sz}': TokenTyWithSize('uint', sz) for sz in range(8, 257, 8)
