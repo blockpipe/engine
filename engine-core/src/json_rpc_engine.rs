@@ -8,7 +8,8 @@ use futures::StreamExt;
 use reqwest::{ClientBuilder, Url};
 
 use crate::{
-    engine::{Engine, Error, Log, StreamT},
+    engine::{Engine, Log, StreamT},
+    error::Error,
     types::{Address, Hash},
 };
 

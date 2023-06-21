@@ -3,14 +3,11 @@ use std::pin::Pin;
 use bytes::Bytes;
 use futures::Stream;
 use serde::Serialize;
-use thiserror::Error;
 
+use crate::error::Error;
 use crate::types::{Address, Hash};
 
 pub type StreamT<T> = Pin<Box<dyn Stream<Item = T> + Send>>;
-
-#[derive(Error, Debug)]
-pub enum Error {}
 
 #[derive(Serialize)]
 pub struct Log {

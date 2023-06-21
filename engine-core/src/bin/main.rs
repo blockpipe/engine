@@ -4,16 +4,17 @@ use std::{
     sync::Arc,
 };
 
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 use clap::Parser;
 use engine_core::{
+    conn::TcpConnection,
     engine::Engine,
+    error::Error,
     json_rpc_engine::JsonRpcEngine,
     types::{Address, Hash},
 };
 use futures::StreamExt;
 use once_cell::sync::Lazy;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use strum::{AsRefStr, EnumIter, EnumString};
 use tokio::runtime::Runtime;
 
@@ -25,64 +26,6 @@ struct Args {
     port: u16,
     #[clap(default_value = "https://eth.llamarpc.com")]
     rpc_url: String,
-}
-
-#[derive(thiserror::Error, Debug)]
-pub enum Error {
-    #[error(transparent)]
-    IOError(#[from] std::io::Error),
-    #[error(transparent)]
-    MsgPackEncodeError(#[from] rmp_serde::encode::Error),
-    #[error(transparent)]
-    MsgPackDecodeError(#[from] rmp_serde::decode::Error),
-}
-
-pub struct TcpConnection {
-    reader: BufReader<TcpStream>,
-    writer: BufWriter<TcpStream>,
-}
-
-impl TcpConnection {
-    pub fn new(stream: TcpStream) -> Self {
-        Self {
-            reader: BufReader::new(stream.try_clone().unwrap()),
-            writer: BufWriter::new(stream.try_clone().unwrap()),
-        }
-    }
-
-    pub fn read<T: DeserializeOwned>(&mut self) -> Result<T, Error> {
-        let size = self.reader.read_u32::<BigEndian>()?;
-        let mut data = vec![0; size as usize];
-        self.reader.read_exact(&mut data)?;
-        Ok(rmp_serde::from_slice(&data)?)
-    }
-
-    pub fn write_row<T: Serialize>(&mut self, v: &T) -> Result<(), Error> {
-        let data = rmp_serde::to_vec(&ServerResponse::Row(v))?;
-        self.write_bytes(&data)
-    }
-
-    pub fn write_end(&mut self, v: u64) -> Result<(), Error> {
-        let data = rmp_serde::to_vec(&ServerResponse::<()>::End(v))?;
-        self.write_bytes(&data)?;
-        Ok(self.writer.flush()?)
-    }
-
-    pub fn write_error(&mut self, v: &str) -> Result<(), Error> {
-        let data = rmp_serde::to_vec(&ServerResponse::<()>::Error(v))?;
-        self.write_bytes(&data)
-    }
-
-    pub fn write_fatal(&mut self, v: &str) -> Result<(), Error> {
-        let data = rmp_serde::to_vec(&ServerResponse::<()>::Fatal(v))?;
-        self.write_bytes(&data)
-    }
-
-    pub fn write_bytes(&mut self, data: &[u8]) -> Result<(), Error> {
-        self.writer.write_u32::<BigEndian>(data.len() as u32)?;
-        self.writer.write_all(data)?;
-        Ok(())
-    }
 }
 
 #[derive(Debug, Clone, Copy, AsRefStr, EnumIter, EnumString, PartialEq, Serialize, Deserialize)]
@@ -125,20 +68,21 @@ static RUNTIME: Lazy<Runtime> = Lazy::new(|| Runtime::new().unwrap());
 
 fn handle_connection(engine: &JsonRpcEngine, conn: &mut TcpConnection) -> Result<(), Error> {
     loop {
-        match conn.read::<ServerRequest>()? {
-            ServerRequest::Ping => conn.write_row(&vec!["Pong"]).unwrap(),
+        let (input, mut writer) = conn.read::<ServerRequest>()?;
+        match input {
+            ServerRequest::Ping => writer.write_row(&vec!["Pong"]).unwrap(),
             ServerRequest::Bye => break,
             ServerRequest::GetLogs(qs) => {
                 RUNTIME.block_on(async {
-                    let mut res = engine.get_logs(10000000, 15000000, qs).await.unwrap();
+                    let mut res = engine.get_logs(10000000, 10200000, qs).await.unwrap();
                     while let Some(log) = res.next().await {
                         let log = log.unwrap();
-                        conn.write_row(&log).unwrap();
+                        writer.write_row(&log).unwrap();
                     }
-                    conn.write_end(0).unwrap();
                 });
             }
         }
+        writer.write_end().unwrap();
     }
     Ok(())
 }
