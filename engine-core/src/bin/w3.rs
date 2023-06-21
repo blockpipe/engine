@@ -17,10 +17,7 @@ async fn main() {
     let url = Url::parse(uri).unwrap();
     let x = Http::new_with_client(
         url,
-        reqwest::ClientBuilder::new()
-            .timeout(Duration::from_secs(2))
-            .build()
-            .unwrap(),
+        reqwest::ClientBuilder::new().timeout(Duration::from_secs(2)).build().unwrap(),
     );
 
     // let client = Provider::<Http>::try_from(uri).unwrap();
@@ -29,12 +26,8 @@ async fn main() {
     // let client = Provider::<Ws>::connect(uri).await.unwrap();
 
     let filter = Filter::new().address(vec![
-        "0xba11d00c5f74255f56a5e366f4f77f5a186d7f55"
-            .parse()
-            .unwrap(),
-        "0xa1faa113cbe53436df28ff0aee54275c13b40975"
-            .parse()
-            .unwrap(),
+        "0xba11d00c5f74255f56a5e366f4f77f5a186d7f55".parse().unwrap(),
+        "0xa1faa113cbe53436df28ff0aee54275c13b40975".parse().unwrap(),
     ]);
 
     let vals = futures::stream::unfold(10000000, move |start| {

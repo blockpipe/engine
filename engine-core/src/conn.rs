@@ -16,11 +16,7 @@ pub struct TcpWriter<'a> {
 
 impl<'a> TcpWriter<'a> {
     pub fn new(conn: &'a mut TcpConnection) -> Self {
-        Self {
-            conn,
-            count: 0,
-            has_error: false,
-        }
+        Self { conn, count: 0, has_error: false }
     }
 
     pub fn write_row<T: Serialize>(&mut self, v: &T) -> Result<(), Error> {

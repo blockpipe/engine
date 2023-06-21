@@ -22,10 +22,7 @@ impl JsonRpcEngine {
         Self {
             client: Provider::new(Http::new_with_client(
                 Url::parse(rpc_url).unwrap(),
-                ClientBuilder::new()
-                    .timeout(Duration::from_secs(5))
-                    .build()
-                    .unwrap(),
+                ClientBuilder::new().timeout(Duration::from_secs(5)).build().unwrap(),
             )),
         }
     }
@@ -75,9 +72,7 @@ impl Engine for JsonRpcEngine {
                 .flatten()
                 .filter(move |log| {
                     futures::future::ready(
-                        filters
-                            .iter()
-                            .any(|(a, h)| a.0 == log.address && h.0 == log.topics[0]),
+                        filters.iter().any(|(a, h)| a.0 == log.address && h.0 == log.topics[0]),
                     )
                 })
                 .map(|log| {
