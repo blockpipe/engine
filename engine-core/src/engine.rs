@@ -1,5 +1,6 @@
-use std::{collections::HashMap, pin::Pin};
+use std::pin::Pin;
 
+use bytes::Bytes;
 use futures::Stream;
 use serde::Serialize;
 use thiserror::Error;
@@ -21,7 +22,7 @@ pub struct Log {
     pub tx_index: i64,
     pub address: Address,
     pub topics: Vec<Hash>,
-    pub data: Vec<u8>,
+    pub data: Bytes,
 }
 
 #[async_trait::async_trait]

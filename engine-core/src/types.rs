@@ -1,6 +1,6 @@
+use bytes::Bytes;
 use ethers::types::{H160, H256};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use serde_bytes::ByteBuf;
 
 pub struct Address(pub H160);
 pub struct Hash(pub H256);
@@ -40,11 +40,11 @@ impl<'de> Deserialize<'de> for Address {
     where
         D: Deserializer<'de>,
     {
-        let s = ByteBuf::deserialize(deserializer)?;
+        let s = Bytes::deserialize(deserializer)?;
         if s.len() != 20 {
             return Err(serde::de::Error::custom("invalid address length"));
         }
-        Ok(Address(H160::from_slice(s.as_slice())))
+        Ok(Address(H160::from_slice(s.as_ref())))
     }
 }
 
@@ -53,10 +53,10 @@ impl<'de> Deserialize<'de> for Hash {
     where
         D: Deserializer<'de>,
     {
-        let s = ByteBuf::deserialize(deserializer)?;
+        let s = Bytes::deserialize(deserializer)?;
         if s.len() != 32 {
             return Err(serde::de::Error::custom("invalid hash length"));
         }
-        Ok(Hash(H256::from_slice(s.as_slice())))
+        Ok(Hash(H256::from_slice(s.as_ref())))
     }
 }

@@ -1,7 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    time::Duration,
-};
+use std::{collections::HashSet, time::Duration};
 
 use ethers::{
     providers::{Http, Middleware, Provider},
@@ -92,7 +89,7 @@ impl Engine for JsonRpcEngine {
                         tx_index: log.transaction_index.unwrap().as_u64() as i64,
                         address: log.address.into(),
                         topics: log.topics.into_iter().map(|topic| topic.into()).collect(),
-                        data: log.data.to_vec(),
+                        data: log.data.0,
                     })
                 }),
         ))
