@@ -24,6 +24,10 @@ pub struct Log {
 
 #[async_trait::async_trait]
 pub trait Engine {
+    /// Returns the lastest block number.
+    async fn get_block_number(&self) -> Result<i64, Error>;
+
+    /// Returns all logs that match the given filters in the given block range.
     async fn get_logs(
         &self,
         from_block: i64,

@@ -30,6 +30,10 @@ impl JsonRpcEngine {
 
 #[async_trait::async_trait]
 impl Engine for JsonRpcEngine {
+    async fn get_block_number(&self) -> Result<i64, Error> {
+        Ok(self.client.get_block_number().await.unwrap().as_u64() as i64)
+    }
+
     async fn get_logs(
         &self,
         from_block: i64,
