@@ -1,4 +1,11 @@
 from dataclasses import dataclass
+from pydantic import BaseModel
+
+
+@dataclass
+class HandlerSpec:
+    event: str
+    address: str
 
 
 s = '''@__handler__
