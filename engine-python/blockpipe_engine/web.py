@@ -20,8 +20,8 @@ class WebserverProcess:
         w = Writer(send_id)
 
         @app.get(f'/{self.name}' + '/{path:path}')
-        async def handle_request(request: Request, response: Response, path: str):
-            query = f'?{request.url.query}' if request.url.query else ''
+        async def handle_request(req: Request, res: Response, path: str):
+            query = f'?{req.url.query}' if req.url.query else ''
             fullpath = f'{path}{query}'
             w.write(fullpath)
             v = r.read()

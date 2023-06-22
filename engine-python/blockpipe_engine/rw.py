@@ -16,8 +16,8 @@ class Signal:
     def __repr__(self):
         return f'Signal({self.v})'
 
-    def __eq__(self, lhs):
-        return isinstance(lhs, Signal) and lhs.v == self.v
+    def __eq__(self, rhs):
+        return isinstance(rhs, Signal) and rhs.v == self.v
 
 
 READ_INTERVAL = Signal('READ_INTERVAL')
