@@ -1,19 +1,12 @@
-use ethers::types::{H160, H256};
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize)]
-pub struct ServerArg {
-    pub columns: Vec<String>,
-    pub network: Option<String>,
-    pub from_block: i64,
-    pub to_block: i64,
-    pub limit: Option<i64>,
-}
+use crate::types::{Address, Hash};
 
 #[derive(Deserialize)]
 pub struct GetLogsArg {
-    pub addrs: Vec<H160>,
-    pub topic0s: Vec<H256>,
+    pub from_block: i64,
+    pub to_block: i64,
+    pub filters: Vec<(Address, Hash)>,
 }
 
 #[derive(Deserialize)]

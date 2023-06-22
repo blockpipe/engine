@@ -2,16 +2,11 @@ use std::{net::TcpListener, sync::Arc};
 
 use clap::Parser;
 use engine_core::{
-    conn::TcpConnection,
-    engine::Engine,
-    error::Error,
-    json_rpc_engine::JsonRpcEngine,
-    types::{Address, Hash},
+    conn::TcpConnection, engine::Engine, error::Error, json_rpc_engine::JsonRpcEngine,
+    msg::ServerRequest,
 };
 use futures::StreamExt;
 use once_cell::sync::Lazy;
-use serde::{Deserialize, Serialize};
-use strum::{AsRefStr, EnumIter, EnumString};
 use tokio::runtime::Runtime;
 
 #[derive(Parser)]
@@ -24,42 +19,6 @@ struct Args {
     rpc_url: String,
 }
 
-#[derive(Debug, Clone, Copy, AsRefStr, EnumIter, EnumString, PartialEq, Serialize, Deserialize)]
-#[strum(serialize_all = "snake_case")]
-#[serde(rename_all = "snake_case")]
-pub enum Network {
-    EthereumMainnet,
-    EthereumGoerli,
-    EthereumSepolia,
-    ArbitrumOne,
-    ArbitrumGoerli,
-    OptimismMainnet,
-}
-
-#[derive(Deserialize)]
-pub enum ServerRequest {
-    Ping,                          // Check if the server is responsive
-    Bye,                           // Close the connection gracefully
-    GetLogs(Vec<(Address, Hash)>), // Get logs from the data source
-}
-
-#[derive(Deserialize)]
-pub struct ServerArg {
-    pub columns: Vec<String>,
-    pub network: Option<Network>,
-    pub from_block: i64,
-    pub to_block: i64,
-    pub limit: Option<i64>,
-}
-
-#[derive(Serialize, Deserialize)]
-pub enum ServerResponse<'a, T> {
-    Row(T),         // Data row to client
-    End(u64),       // End with total row count
-    Error(&'a str), // Frame Error with message string
-    Fatal(&'a str), // Fatal error with message string
-}
-
 static RUNTIME: Lazy<Runtime> = Lazy::new(|| Runtime::new().unwrap());
 
 fn handle_connection(engine: &JsonRpcEngine, conn: &mut TcpConnection) -> Result<(), Error> {
@@ -70,7 +29,8 @@ fn handle_connection(engine: &JsonRpcEngine, conn: &mut TcpConnection) -> Result
             ServerRequest::Bye => break,
             ServerRequest::GetLogs(qs) => {
                 RUNTIME.block_on(async {
-                    let mut res = engine.get_logs(10000000, 10200000, qs).await.unwrap();
+                    let mut res =
+                        engine.get_logs(qs.from_block, qs.to_block, qs.filters).await.unwrap();
                     while let Some(log) = res.next().await {
                         let log = log.unwrap();
                         writer.write_row(&log).unwrap();
