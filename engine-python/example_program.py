@@ -29,4 +29,4 @@ def api_get_balance(address):
 def api_get_total_supply():
     '''path: /total_supply
     '''
-    return -balances['\x00'*20]
+    return -balances[b'\x00'*20]
